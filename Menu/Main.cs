@@ -7,9 +7,12 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using static StupidTemplate.Patches.HarmonyPatches;
 using static StupidTemplate.Menu.Buttons;
+using static Coders_Mod_Menu.Patches.legal_stuff;
 using static StupidTemplate.Settings;
 using Photon.Pun;
+using Coders_Mod_Menu.Patches;
 
 namespace StupidTemplate.Menu
 {
@@ -17,11 +20,25 @@ namespace StupidTemplate.Menu
     [HarmonyPatch("LateUpdate", MethodType.Normal)]
     public class Main : MonoBehaviour
     {
-        public static GameObject COC;
-        public static GameObject motd;
-        // Constant
         public static void Prefix()
         {
+            if (!legal_stuff.inAllowedRoom)
+            {
+                GameObject.Destroy(menu);
+
+                foreach (ButtonInfo[] buttons in Menu.Buttons.buttons)
+                {
+                    foreach (ButtonInfo button in buttons)
+                    {
+                        button.enabled = false;
+                        button.disableMethod();
+                    }
+                }
+
+            }
+
+
+
 
             // Initialize Menu
             try
